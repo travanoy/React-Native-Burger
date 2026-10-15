@@ -4,10 +4,41 @@ import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from "react-n
 import { SafeAreaView } from "react-native-safe-area-context";
 import { categories, burger } from "@/mock/burger";
 import BurgerCard, { BurgerCardProps } from "@/components/main/ui/burger-card";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 import BurgerMenuItem from "@/components/main/ui/burgerMenu-card";
 
 export default function Index() {
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+    const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadAuth = async () => {
+            const stored = await AsyncStorage.getItem("isLoggedIn");
+            const storedUser = await AsyncStorage.getItem("user");
+            if (cancelled) return;
+            setIsLoggedIn(stored === "true");
+            setUser(storedUser ? JSON.parse(storedUser) : {});
+        };
+
+        loadAuth();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    if (isLoggedIn === null || user === null) {
+        return <View style={styles.container} />;
+    }
+
+    if (!isLoggedIn) {
+        return <Redirect href="/launch" />;
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -15,11 +46,17 @@ export default function Index() {
                 <View style={styles.header}>
                     <Ionicons name="menu-outline" size={24} color="white" />
                     <View style={styles.headerContent}>
-                        <Image
-                            source={{ uri: "https://img.magnific.com/free-psd/3d-illustration-with-online-avatar_23-2151303097.jpg?semt=ais_hybrid&w=740&q=80" }}
-                            style={styles.burgerImage}
-                            contentFit="contain"
-                        />
+                        {user.email ? (
+                            <View style={styles.userEmailContainer}>
+                                <Text style={styles.userEmail}>{user.email.slice(0, 1).toUpperCase()}</Text>
+                            </View>
+                        ) : (
+                            <Image
+                                source={{ uri: "https://img.magnific.com/free-psd/3d-illustration-with-online-avatar_23-2151303097.jpg?semt=ais_hybrid&w=740&q=80" }}
+                                style={styles.burgerImage}
+                                contentFit="contain"
+                            />
+                        )}
                         <Ionicons name="notifications-outline" size={24} color="white" />
                     </View>
                 </View>
@@ -116,6 +153,20 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
+    },
+    userEmailContainer: {
+        backgroundColor: "#3A3940",
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    userEmail: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold",
+        textTransform: "uppercase",
     },
     titleContainer: {
         marginVertical: 16,

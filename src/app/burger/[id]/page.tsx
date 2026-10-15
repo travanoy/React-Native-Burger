@@ -11,7 +11,7 @@ import { burger } from "@/mock/burger";
 const BACKGROUND = "#242329";
 
 export default function Index() {
-  const {id }= useLocalSearchParams(); // string
+  const {id }= useLocalSearchParams(); 
   const { width } = useWindowDimensions();
   const [quantity, setQuantity] = useState(1);
   const imageWidth = Math.min(width - 24, 420);
