@@ -2,15 +2,12 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { burger } from "@/mock/burger";
-import { BurgerType } from "@/types/burger-type";
 
-
-const UNIT_PRICE = 539;
 const BACKGROUND = "#242329";
 
 export default function Index() {
@@ -19,22 +16,21 @@ export default function Index() {
   const [quantity, setQuantity] = useState(1);
   const imageWidth = Math.min(width - 24, 420);
   
-  const burgers = burger.find((burger: BurgerType) => burger.id === Number(id));
-  
+  const burgers = burger.find((item) => item.id === Number(id));
+  const [totalPrice, setTotalPrice] = useState(burgers?.price ?? 0);
 
   if (!burgers) {
     return <Text>Burger not found</Text>;
   }
-  const [totalPrice, setTotalPrice] = useState(burgers.price);
 
   const inc = () => {
     setQuantity(quantity + 1);
-    setTotalPrice((quantity + 1) * UNIT_PRICE);
+    setTotalPrice((quantity + 1) * burgers.price);
   };
   const dec = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
-      setTotalPrice((quantity-1) * UNIT_PRICE);
+      setTotalPrice((quantity - 1) * burgers.price);
     }
   };
 

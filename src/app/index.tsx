@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { categories, burger } from "@/mock/burger";
 import BurgerCard, { BurgerCardProps } from "@/components/main/ui/burger-card";
 import { Link } from "expo-router";
-import BurgerMenuItem, { MenuItemProps } from "@/components/main/ui/burgerMenu-card";
+import BurgerMenuItem from "@/components/main/ui/burgerMenu-card";
 
 export default function Index() {
     return (
